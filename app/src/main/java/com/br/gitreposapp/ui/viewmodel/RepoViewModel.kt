@@ -10,6 +10,7 @@ import com.br.gitreposapp.domain.usecases.ToggleFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,8 +25,8 @@ class RepoViewModel @Inject constructor(
     val uiState: StateFlow<RepoListUiState> = _uiState
 
     // Lista paginada
-    private val _repos = mutableStateListOf<Repo>()
-    val repos: List<Repo> get() = _repos
+    private val _repos = MutableStateFlow<List<Repo>>(emptyList())
+    val repos: StateFlow<List<Repo>> = _repos
 
     // Controle de paginação
     private var currentPage = 1
@@ -36,6 +37,65 @@ class RepoViewModel @Inject constructor(
     }
 
     fun loadInitialRepos() {
+        if (_uiState.value.isLoading) return
+
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(
+                isLoading = true,
+                error = null
+            )
+
+            getReposUseCase(currentPage, 15) // Agora getReposUseCase também deve devolver Flow<List<Repo>>
+                .catch { e ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = "Erro ao carregar repositórios",
+                        isInitialLoading = false
+                    )
+                    Log.d("Erro ", e.message ?: "Erro ao carregar repositórios")
+                }
+                .collect { newRepos ->
+                    _repos.value = newRepos
+                    currentPage = 2
+                    hasMorePages = newRepos.isNotEmpty()
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        isInitialLoading = false
+                    )
+                }
+        }
+    }
+
+    fun loadMoreRepos() {
+        if (_uiState.value.isLoading) return
+
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(
+                isLoading = true,
+                error = null
+            )
+
+            getReposUseCase(currentPage, 15) // Agora getReposUseCase também deve devolver Flow<List<Repo>>
+                .catch { e ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = "Erro ao carregar mais repositórios",
+                        isInitialLoading = false
+                    )
+                    Log.d("Erro ", e.message ?: "Erro ao carregar mais repositórios")
+                }
+                .collect { newRepos ->
+                    _repos.value = newRepos
+                    currentPage++
+                    hasMorePages = newRepos.isNotEmpty()
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        isInitialLoading = false
+                    )
+                }
+        }
+    }
+    /*fun loadInitialRepos() {
         if (_uiState.value.isLoading) return
 
         viewModelScope.launch {
@@ -64,8 +124,10 @@ class RepoViewModel @Inject constructor(
                 )
             }
         }
-    }
+    }*/
 
+
+/*
     fun loadMoreRepos() {
         if (_uiState.value.isLoading || !hasMorePages) return
 
@@ -93,16 +155,13 @@ class RepoViewModel @Inject constructor(
             }
         }
     }
-
+*/
     fun toggleFavorite(repo: Repo) {
         viewModelScope.launch {
             try {
                 toggleFavoriteUseCase(repo)
-                // Atualiza o item na lista local
-                val index = _repos.indexOfFirst { it.id == repo.id }
-                if (index >= 0) {
-                    _repos[index] = _repos[index].copy(isFavorite = !repo.isFavorite)
-                }
+                // Atualização automática: não precisa manualmente mudar o item na lista!
+                // A stream dos repos já reflete o novo favorito.
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     error = "Erro ao atualizar favorito"

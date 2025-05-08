@@ -6,6 +6,8 @@ import com.br.gitreposapp.data.remote.RepoApi
 import com.br.gitreposapp.domain.model.Repo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -14,20 +16,27 @@ class RepoRepositoryImpl @Inject constructor(
     private val dao: RepoDao
 ) : RepoRepository {
 
-    override suspend fun getRepos(page: Int, pageSize: Int): List<Repo> {
-        val apiResponse = api.getPublicRepos(page * pageSize, pageSize)
-        val favorites = dao.getAllFavorites().first()
+    override fun getRepos(page: Int, pageSize: Int): Flow<List<Repo>> {
+        // Combina os favoritos e o resultado da API
+        return dao.getAllFavorites()
+            .flatMapLatest { favoritesEntities ->
+                flow {
+                    val apiResponse = api.getPublicRepos(page * pageSize, pageSize)
+                    val favorites = favoritesEntities.map { it.id }
 
-        return apiResponse.map { dto ->
-            Repo(
-                id = dto.id,
-                name = dto.name,
-                description = dto.description,
-                url = dto.url,
-                avatarUrl = dto.owner.avatarUrl,
-                isFavorite = favorites.any { it.id == dto.id }
-            )
-        }
+                    val repos = apiResponse.map { dto ->
+                        Repo(
+                            id = dto.id,
+                            name = dto.name,
+                            description = dto.description,
+                            url = dto.url,
+                            avatarUrl = dto.owner.avatarUrl,
+                            isFavorite = favorites.contains(dto.id)
+                        )
+                    }
+                    emit(repos)
+                }
+            }
     }
 
     override suspend fun addFavorite(repo: RepoEntity) {
@@ -40,9 +49,7 @@ class RepoRepositoryImpl @Inject constructor(
 
     override fun getFavorites(): Flow<List<Repo>> {
         return dao.getAllFavorites().map { entities ->
-            entities.map { entity ->
-                entity.toDomainModel()
-            }
+            entities.map { it.toDomainModel() }
         }
     }
 }

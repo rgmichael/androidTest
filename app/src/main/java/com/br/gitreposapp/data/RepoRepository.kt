@@ -5,7 +5,7 @@ import com.br.gitreposapp.domain.model.Repo
 import kotlinx.coroutines.flow.Flow
 
 interface RepoRepository {
-    suspend fun getRepos(page: Int, pageSize: Int): List<Repo>
+    fun getRepos(page: Int, pageSize: Int): Flow<List<Repo>>
     suspend fun addFavorite(repo: RepoEntity)
     suspend fun removeFavorite(repo: RepoEntity)
     fun getFavorites(): Flow<List<Repo>>
