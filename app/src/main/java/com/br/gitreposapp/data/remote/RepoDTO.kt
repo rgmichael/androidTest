@@ -1,4 +1,4 @@
-package com.br.marveltestnew.data.remote
+package com.br.gitreposapp.data.remote
 
 import com.google.gson.annotations.SerializedName
 

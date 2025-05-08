@@ -17,7 +17,6 @@ class ToggleFavoriteUseCase @Inject constructor(
     }
 }
 
-// Extensão para conversão
 fun Repo.toEntity() = RepoEntity(
     id = this.id,
     name = this.name,

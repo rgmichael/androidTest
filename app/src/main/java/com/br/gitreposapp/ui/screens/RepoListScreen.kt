@@ -57,7 +57,6 @@ fun RepoListScreen(
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
-    // Paginação (ainda opcional, dependendo se quiser mudar o fluxo depois)
     LaunchedEffect(lazyListState) {
         snapshotFlow { lazyListState.isScrolledToEnd(buffer = 3) }
             .collect { isEnd ->
@@ -99,7 +98,7 @@ fun RepoListScreen(
             }
         }
     ) { paddingValues ->
-        // Gerenciamento de estados
+
         when {
             uiState.isInitialLoading -> {
                 FullScreenLoading()

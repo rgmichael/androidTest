@@ -1,6 +1,5 @@
 package com.br.gitreposapp.data.remote
 
-import com.br.marveltestnew.data.remote.RepoDTO
 import retrofit2.http.GET
 import retrofit2.http.Query
 

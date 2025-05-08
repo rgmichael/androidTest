@@ -5,7 +5,6 @@ import com.br.gitreposapp.data.local.RepoEntity
 import com.br.gitreposapp.data.remote.RepoApi
 import com.br.gitreposapp.domain.model.Repo
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -17,7 +16,7 @@ class RepoRepositoryImpl @Inject constructor(
 ) : RepoRepository {
 
     override fun getRepos(page: Int, pageSize: Int): Flow<List<Repo>> {
-        // Combina os favoritos e o resultado da API
+
         return dao.getAllFavorites()
             .flatMapLatest { favoritesEntities ->
                 flow {
@@ -54,7 +53,6 @@ class RepoRepositoryImpl @Inject constructor(
     }
 }
 
-// Extensão para conversão
 fun RepoEntity.toDomainModel() = Repo(
     id = this.id,
     name = this.name,

@@ -48,12 +48,11 @@ fun RepoItem(
         Column(
             modifier = Modifier.padding(12.dp)
         ) {
-            // Header com avatar e nome do repositório
+
             RepoHeader(repo, onFavoriteClick)
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Descrição (se existir)
             repo.description?.let { description ->
                 Text(
                     text = description,
@@ -64,7 +63,6 @@ fun RepoItem(
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // Footer com link
             RepoFooter(repo.url)
         }
     }
@@ -78,7 +76,7 @@ private fun RepoHeader(
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Avatar
+
         AsyncImage(
             model = repo.avatarUrl,
             contentDescription = "Owner avatar",
@@ -90,13 +88,11 @@ private fun RepoHeader(
 
         Spacer(modifier = Modifier.width(12.dp))
 
-        // Nome do repositório (com peso flexível)
         Text(
             text = repo.name,
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.weight(1f))
 
-        // Botão de favorito
         IconButton(
             onClick = { onFavoriteClick(repo) }
         ) {
