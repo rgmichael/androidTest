@@ -82,7 +82,7 @@ class RepoViewModel @Inject constructor(
                     Log.d("Erro ", e.message ?: "Erro ao carregar mais repositórios")
                 }
                 .collect { newRepos ->
-                    _repos.value = newRepos
+                    _repos.value = _repos.value + newRepos
                     currentPage++
                     hasMorePages = newRepos.isNotEmpty()
                     _uiState.value = _uiState.value.copy(

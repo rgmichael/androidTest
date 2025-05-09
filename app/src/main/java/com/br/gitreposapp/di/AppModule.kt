@@ -29,11 +29,21 @@ object AppModule {
     // ========== Provê instâncias de Rede ==========
     @Provides
     fun provideOkHttpClient(): OkHttpClient {
-        return OkHttpClient.Builder()
-            .addInterceptor(HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            })
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
+        val client = OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                val newRequest = chain.request().newBuilder()
+                    .addHeader("Authorization", "token ")
+                    .build()
+                chain.proceed(newRequest)
+            }
+            .addInterceptor(loggingInterceptor)
             .build()
+
+        return client
     }
 
     @Provides

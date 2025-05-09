@@ -61,7 +61,7 @@ fun RepoListScreen(
         snapshotFlow { lazyListState.isScrolledToEnd(buffer = 3) }
             .collect { isEnd ->
                 if (isEnd && !uiState.isLoading) {
-                    viewModel.loadInitialRepos()
+                    viewModel.loadMoreRepos()
                 }
             }
     }
