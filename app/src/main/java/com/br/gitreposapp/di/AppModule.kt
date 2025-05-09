@@ -36,7 +36,6 @@ object AppModule {
         val client = OkHttpClient.Builder()
             .addInterceptor { chain ->
                 val newRequest = chain.request().newBuilder()
-                    .addHeader("Authorization", "token ")
                     .build()
                 chain.proceed(newRequest)
             }
