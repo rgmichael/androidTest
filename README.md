@@ -29,6 +29,7 @@ GitReposApp é um aplicativo Android desenvolvido com Kotlin que permite visuali
 - Coroutines & Flow (concorrência)
 - MVVM (Model-View-ViewModel)
 
+
 > Futuras implementações
 
 - GPS com localização precisa
@@ -41,10 +42,15 @@ GitReposApp é um aplicativo Android desenvolvido com Kotlin que permite visuali
 🗂 Estrutura do Projeto
 
 app/
+
 ├── data/           # Fonte de dados (API e banco local)
+
 ├── domain/         # Modelos de domínio e use cases
+
 ├── ui/             # Telas, navegação e componentes de UI
+
 ├── di/             # Módulos de injeção com Hilt
+
 ├── MainActivity.kt # Ponto de entrada da aplicação
 
 
@@ -57,12 +63,17 @@ app/
 
 Navegue até a pasta do projeto:
 
-cd GitReposApp
+- cd GitReposApp
 
-Sincronize o projeto com o Gradle:
+Sincronize o projeto com o Gradle, no Android Studio, clique em "File > Sync Project with Gradle Files".
 
-No Android Studio, clique em "File > Sync Project with Gradle Files".
+Compile e execute o app, selecione um emulador ou dispositivo físico e clique em Run (ou pressione Shift + F10).
 
-Compile e execute o app:
 
-Selecione um emulador ou dispositivo físico e clique em Run (ou pressione Shift + F10).
+🧪 Testes
+Para rodar os testes:
+
+./gradlew testDebugUnitTest
+
+Você também pode executar os testes instrumentados via Android Studio na aba (androidTest/) para testes instrumentados e na aba (test/) // testes unitários 
+

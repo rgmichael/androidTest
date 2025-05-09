@@ -66,7 +66,7 @@ fun FavoritesScreen(
 }
 
 @Composable
-private fun EmptyFavoritesMessage() {
+fun EmptyFavoritesMessage() {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
