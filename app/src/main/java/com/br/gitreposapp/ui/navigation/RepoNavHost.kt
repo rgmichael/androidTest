@@ -11,15 +11,17 @@ import com.br.gitreposapp.ui.screens.RepoListScreen
 fun RepoNavHost() {
     val navController = rememberNavController()
 
-    NavHost(navController, startDestination = "repo_list") {
-        composable("repo_list") {
-            RepoListScreen(navController = navController)
-        }
-        composable("favorites") {
-            FavoritesScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
+    NavHost(navController, startDestination = AppRoutes.REPO_LIST) {
+        composable(AppRoutes.REPO_LIST) {
+            RepoListScreen(
+                onNavigateToFavorites = {
+                    navController.navigate(AppRoutes.FAVORITES)
                 }
+            )
+        }
+        composable(AppRoutes.FAVORITES) {
+            FavoritesScreen(
+                onNavigateBack = { navController.popBackStack() }
             )
         }
     }

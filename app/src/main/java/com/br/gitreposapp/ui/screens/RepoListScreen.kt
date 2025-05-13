@@ -39,8 +39,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.br.gitreposapp.ui.components.RepoItem
 import com.br.gitreposapp.ui.viewmodel.RepoViewModel
 import com.br.gitreposapp.utils.isScrolledToEnd
@@ -49,7 +49,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RepoListScreen(
-    navController: NavController,
+    onNavigateToFavorites: () -> Unit,
     viewModel: RepoViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -72,7 +72,7 @@ fun RepoListScreen(
                 title = { Text("Repositórios GitHub") },
                 actions = {
                     IconButton(
-                        onClick = { navController.navigate("favorites") }
+                        onClick = onNavigateToFavorites
                     ) {
                         Icon(
                             imageVector = Icons.Default.Favorite,
@@ -147,9 +147,11 @@ fun RepoListScreen(
 }
 
 @Composable
-private fun FullScreenLoading() {
+fun FullScreenLoading() {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag("FullScreenLoading"),
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator()
@@ -157,7 +159,7 @@ private fun FullScreenLoading() {
 }
 
 @Composable
-private fun ErrorScreen(
+fun ErrorScreen(
     errorMessage: String,
     onRetry: () -> Unit,
     onDismiss: () -> Unit,
@@ -166,7 +168,8 @@ private fun ErrorScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .testTag("ErrorScreen"),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -200,11 +203,12 @@ private fun ErrorScreen(
 }
 
 @Composable
-private fun EmptyState() {
+fun EmptyState() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .testTag("EmptyState"),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

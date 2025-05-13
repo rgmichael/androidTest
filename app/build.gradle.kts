@@ -64,6 +64,8 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.6.5")
     implementation("androidx.compose.material3:material3:1.2.1")
     implementation("androidx.compose.ui:ui-tooling-preview:1.6.5")
+    implementation("androidx.test.ext:junit-ktx:1.2.1")
+    testImplementation("org.testng:testng:6.9.6")
     debugImplementation("androidx.compose.ui:ui-tooling:1.6.5")
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
@@ -95,7 +97,6 @@ dependencies {
 
     // Unit test
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
 
@@ -107,9 +108,8 @@ dependencies {
     androidTestImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
     androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-
     testImplementation("io.mockk:mockk:1.13.10")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-    testImplementation("androidx.arch.core:core-testing:2.2.0")
-
+    androidTestImplementation("androidx.room:room-testing:2.6.1")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
 }

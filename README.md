@@ -73,7 +73,13 @@ Compile e execute o app, selecione um emulador ou dispositivo físico e clique e
 🧪 Testes
 Para rodar os testes:
 
-./gradlew testDebugUnitTest
+➤ Testes locais:
 
-Você também pode executar os testes instrumentados via Android Studio na aba (androidTest/) para testes instrumentados e na aba (test/) // testes unitários 
+./gradlew test
+
+➤ Testes instrumentados:
+
+./gradlew connectedAndroidTest
+
+Você também pode executar os testes instrumentados via Android Studio na aba (androidTest/) para testes instrumentados e na aba (test/) para testes unitários 
 

@@ -8,5 +8,5 @@ interface RepoApi {
     suspend fun getPublicRepos(
         @Query("since") since: Int,
         @Query("per_page") perPage: Int = 15
-    ): List<RepoDTO>
+    ): List<RepoDto>
 }
