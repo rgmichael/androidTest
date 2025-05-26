@@ -7,7 +7,9 @@ import com.br.gitreposapp.data.RepoRepositoryImpl
 import com.br.gitreposapp.data.local.AppDatabase
 import com.br.gitreposapp.data.local.RepoDao
 import com.br.gitreposapp.data.remote.RepoApi
+import com.br.gitreposapp.domain.usecases.GetFavoritesUseCase
 import com.br.gitreposapp.domain.usecases.GetReposUseCase
+import com.br.gitreposapp.domain.usecases.ObserveFavoritesUseCase
 import com.br.gitreposapp.domain.usecases.ToggleFavoriteUseCase
 import com.br.gitreposapp.ui.viewmodel.RepoViewModel
 import dagger.Module
@@ -96,6 +98,16 @@ object AppModule {
         return ToggleFavoriteUseCase(repository)
     }
 
+    @Provides
+    fun provideObserveFavoritesUseCase(repository: RepoRepository): ObserveFavoritesUseCase {
+        return ObserveFavoritesUseCase(repository)
+    }
+
+    @Provides
+    fun provideGetFavoritesUseCase(repository: RepoRepository): GetFavoritesUseCase {
+        return GetFavoritesUseCase(repository)
+    }
+
     // ========== Provê ViewModels (para @ViewModelComponent) ==========
     @Module
     @InstallIn(ViewModelComponent::class)
@@ -103,9 +115,10 @@ object AppModule {
         @Provides
         fun provideRepoViewModel(
             getReposUseCase: GetReposUseCase,
-            toggleFavoriteUseCase: ToggleFavoriteUseCase
+            toggleFavoriteUseCase: ToggleFavoriteUseCase,
+            observeFavoritesUseCase: ObserveFavoritesUseCase
         ): RepoViewModel {
-            return RepoViewModel(getReposUseCase, toggleFavoriteUseCase)
+            return RepoViewModel(getReposUseCase, toggleFavoriteUseCase, observeFavoritesUseCase)
         }
     }
 }

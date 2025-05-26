@@ -5,9 +5,11 @@ import com.br.gitreposapp.data.local.RepoEntity
 import com.br.gitreposapp.data.remote.RepoApi
 import com.br.gitreposapp.domain.model.Repo
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
 class RepoRepositoryImpl @Inject constructor(
@@ -15,27 +17,27 @@ class RepoRepositoryImpl @Inject constructor(
     private val dao: RepoDao
 ) : RepoRepository {
 
-    override fun getRepos(page: Int, pageSize: Int): Flow<List<Repo>> {
+    private val _favoritesUpdates = MutableSharedFlow<Unit>(replay = 1)
 
-        return dao.getAllFavorites()
-            .flatMapLatest { favoritesEntities ->
-                flow {
-                    val apiResponse = api.getPublicRepos(page * pageSize, pageSize)
-                    val favorites = favoritesEntities.map { it.id }
+    override suspend fun getRepos(page: Int, pageSize: Int): List<Repo> {
+        val apiResponse = api.searchRepositories(
+            query = "stars:>0",
+            page = page,
+            perPage = pageSize
+        )
 
-                    val repos = apiResponse.map { dto ->
-                        Repo(
-                            id = dto.id,
-                            name = dto.name,
-                            description = dto.description,
-                            url = dto.url,
-                            avatarUrl = dto.owner.avatarUrl,
-                            isFavorite = favorites.contains(dto.id)
-                        )
-                    }
-                    emit(repos)
-                }
-            }
+        val favorites = dao.getAllFavorites().first()
+
+        return apiResponse.items.map { dto ->
+            Repo(
+                id = dto.id,
+                name = dto.name,
+                description = dto.description ?: "No description available",
+                url = dto.url,
+                avatarUrl = dto.owner.avatarUrl,
+                isFavorite = favorites.any { it.id == dto.id }
+            )
+        }
     }
 
     override suspend fun addFavorite(repo: RepoEntity) {
@@ -43,13 +45,25 @@ class RepoRepositoryImpl @Inject constructor(
     }
 
     override suspend fun removeFavorite(repo: RepoEntity) {
+        _favoritesUpdates.emit(Unit)
         dao.delete(repo)
     }
 
     override fun getFavorites(): Flow<List<Repo>> {
         return dao.getAllFavorites().map { entities ->
-            entities.map { it.toDomainModel() }
+            entities.map { entity ->
+                entity.toDomainModel()
+            }
         }
+    }
+
+    override fun observeFavorites(): Flow<List<Repo>> {
+        return _favoritesUpdates
+            .onStart { emit(Unit) }
+            .flatMapLatest {
+                dao.getAllFavorites()
+                    .map { favorites -> favorites.map { it.toDomainModel() } }
+            }
     }
 }
 

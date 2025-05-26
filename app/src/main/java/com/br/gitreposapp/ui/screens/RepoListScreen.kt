@@ -53,14 +53,13 @@ fun RepoListScreen(
     viewModel: RepoViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val repos by viewModel.repos.collectAsState()
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(lazyListState) {
         snapshotFlow { lazyListState.isScrolledToEnd(buffer = 3) }
             .collect { isEnd ->
-                if (isEnd && !uiState.isLoading) {
+                if (isEnd && !uiState.isLoading && !uiState.isInitialLoading && viewModel.repos.isNotEmpty()) {
                     viewModel.loadMoreRepos()
                 }
             }
@@ -113,7 +112,7 @@ fun RepoListScreen(
                 )
             }
 
-            repos.isEmpty() -> {
+            viewModel.repos.isEmpty() -> {
                 EmptyState()
             }
 
@@ -123,7 +122,7 @@ fun RepoListScreen(
                     modifier = Modifier.padding(paddingValues),
                     contentPadding = PaddingValues(8.dp)
                 ) {
-                    items(repos) { repo ->
+                    items(viewModel.repos) { repo ->
                         RepoItem(
                             repo = repo,
                             onFavoriteClick = { viewModel.toggleFavorite(repo) },
